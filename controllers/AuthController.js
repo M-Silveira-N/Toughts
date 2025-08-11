@@ -13,7 +13,7 @@ module.exports = class AuthController {
     }
 
     static async registerPost(req, res){
-        const { username, email, password, confirm_password } = req.body;
+        const { name, email, password, confirm_password } = req.body;
 
         // password match validation
         if (password !== confirm_password) {
@@ -21,16 +21,39 @@ module.exports = class AuthController {
             return res.render('auth/register');
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        //check if user exists
+        const userExists = await User.findOne({ where: { email: email } });
+        if (userExists) {
+            req.flash('message', 'Este e-mail já está em uso');
+            return res.render('auth/register');
+        }
 
-        const user = new User({
-            username,
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = {
+            name,
             email,
             password: hashedPassword
-        });
+        };
 
-        await user.save();
+        try{
+            const createdUser = await User.create(user);
 
-        res.redirect('/login');
+            //initialize session
+            req.session.userid = createdUser.id
+
+            req.flash('message', 'Conta criada com sucesso! Você já pode fazer login.');
+
+            req.session.save(() => {
+                res.redirect('/')
+            })
+        }catch(error){
+            console.error("Error creating user:", error);
+            req.flash('message', 'Houve um erro ao criar sua conta, tente novamente mais tarde. ');
+            return res.render('auth/register');
+        }
+        
     }
 }
