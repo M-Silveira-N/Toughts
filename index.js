@@ -1,5 +1,5 @@
 const express = require('express');
-const exphbs = require('express-handlebars');
+const { engine } = require('express-handlebars'); // Mudança: importação atualizada
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const flash = require('express-flash');
@@ -8,8 +8,19 @@ const app = express();
 
 const conn = require('./db/conn');
 
-// Template engine setup
-app.engine('handlebars', exphbs({
+//Import Models
+const Tought = require('./models/Tought')
+const User = require('./models/ManoelUser');
+const { FORCE } = require('sequelize/lib/index-hints');
+
+//Import Routes
+const toughtsRoutes = require('./routes/toughtsRoutes')
+
+//Import Controllers
+const ToughtController = require('./controllers/ToughtController')
+
+// Template engine setup - Mudança: nova sintaxe do express-handlebars
+app.engine('handlebars', engine({
     layoutsDir: 'views/layouts',
     defaultLayout: 'main',
     extname: '.handlebars'
@@ -20,6 +31,7 @@ app.set('view engine', 'handlebars');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+//Configurando a sessão
 app.use(
     session({
         name: "session",
@@ -54,8 +66,14 @@ app.use((req, res, next) => {
     next();
 })
 
+//Routes
+app.use('/toughts', toughtsRoutes);
+
+//Controllers
+app.get('/', ToughtController.showToughts);
+
 conn
-    .sync()
+    .sync({FORCE: false})
     .then(() => {
         console.log('Banco de dados sincronizado com sucesso.');
         app.listen(3000, () => {
