@@ -15,6 +15,7 @@ const { FORCE } = require('sequelize/lib/index-hints');
 
 //Import Routes
 const toughtsRoutes = require('./routes/toughtsRoutes')
+const authRoutes = require('./routes/authRoutes')
 
 //Import Controllers
 const ToughtController = require('./controllers/ToughtController')
@@ -68,6 +69,8 @@ app.use((req, res, next) => {
 
 //Routes
 app.use('/toughts', toughtsRoutes);
+
+app.use('/', authRoutes);
 
 //Controllers
 app.get('/', ToughtController.showToughts);
