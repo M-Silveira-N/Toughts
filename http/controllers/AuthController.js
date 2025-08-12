@@ -1,4 +1,4 @@
-const User = require('../models/ManoelUser')
+const User = require('../../models/ManoelUser')
 
 const bcrypt = require('bcryptjs')
 

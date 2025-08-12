@@ -14,11 +14,11 @@ const User = require('./models/ManoelUser');
 const { FORCE } = require('sequelize/lib/index-hints');
 
 //Import Routes
-const toughtsRoutes = require('./routes/toughtsRoutes')
-const authRoutes = require('./routes/authRoutes')
+const toughtsRoutes = require('./http/routes/toughtsRoutes')
+const authRoutes = require('./http/routes/authRoutes')
 
 //Import Controllers
-const ToughtController = require('./controllers/ToughtController')
+const ToughtController = require('./http/controllers/ToughtController')
 
 // Template engine setup - Mudança: nova sintaxe do express-handlebars
 app.engine('handlebars', engine({
