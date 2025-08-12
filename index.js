@@ -45,8 +45,8 @@ app.use(
         }),
         cookie: {
             secure: false,
-            maxAge: 360000,
-            expires: new Date(Date.now() + 360000),
+            maxAge: 3600000,
+            expires: new Date(Date.now() + 3600000),
             httpOnly: true
         }
     })
@@ -76,7 +76,7 @@ app.use('/', authRoutes);
 app.get('/', ToughtController.showToughts);
 
 conn
-    .sync({FORCE: false})
+    .sync({ force: false })
     .then(() => {
         console.log('Banco de dados sincronizado com sucesso.');
         app.listen(3000, () => {

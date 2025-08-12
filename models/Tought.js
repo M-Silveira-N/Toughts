@@ -15,3 +15,5 @@ const Tought = db.define('Tought', {
 
 Tought.belongsTo(User)
 User.hasMany(Tought)
+
+module.exports = Tought
