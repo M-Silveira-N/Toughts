@@ -7,7 +7,26 @@ module.exports = class ToughtController {
     }
 
     static async dashboard(req, res){
-        res.render('toughts/dashboard');
+        const userId = req.session.userid
+
+        const user = await User.findOne({
+            where: {
+                id: userId
+            },
+            include: Tought,
+            plain: true
+        })
+
+        if(!user){
+            req.flash('error', 'Usuário não encontrado.');
+            req.session.save(() => {
+                res.redirect('/login');
+            })
+        }
+
+        const toughts = user.Toughts.map((result) => result.dataValues);
+
+        res.render('toughts/dashboard', { toughts });
     }
 
     static createTought(req, res){
