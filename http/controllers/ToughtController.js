@@ -55,4 +55,30 @@ module.exports = class ToughtController {
             })
         }
     }
+
+    static async removeTought(req, res){
+        
+        const id = req.body.id
+        const userId = req.session.userid
+
+        try {
+            await Tought.destroy({
+                where: {
+                    id,
+                    ManoelUserId: userId
+                }
+            })
+
+            req.flash('message', 'Pensamento removido com sucesso!');
+            req.session.save(() => {
+                res.redirect('/toughts/dashboard');
+            })
+        } catch (error) {
+            console.error('Erro ao remover pensamento:', error);
+            req.flash('error', 'Erro ao remover pensamento.');
+            req.session.save(() => {
+                res.redirect('/toughts/dashboard');
+            })
+        }
+    }
 }
