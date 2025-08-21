@@ -62,6 +62,61 @@ module.exports = class ToughtController {
         }
     }
 
+    static async updateTought(req, res){
+
+        const id = req.params.id
+        const userId = req.session.userid
+
+        const tought = await Tought.findOne({
+            where: {
+                id,
+                ManoelUserId: userId
+            },
+            raw: true
+        })
+
+        if(!tought){
+            req.flash('error', 'Pensamento não encontrado.');
+            req.session.save(() => {
+                res.redirect('/toughts/dashboard');
+            })
+            return
+        }
+
+        res.render('toughts/edit', { tought })
+    }
+
+    static async updateToughtSave(req, res){
+
+        const id = req.body.id
+        const userId = req.session.userid
+
+        const tought = {
+            title: req.body.title,
+            ManoelUserId: userId
+        }
+
+        try{
+            await Tought.update(tought, {
+                where: {
+                    id,
+                    ManoelUserId: userId
+                }
+            })
+
+            req.flash('message', 'Pensamento atualizado com sucesso!');
+            req.session.save(() => {
+                res.redirect('/toughts/dashboard');
+            })
+        } catch (error) {
+            console.error('Erro ao atualizar pensamento:', error);
+            req.flash('error', 'Erro ao atualizar pensamento.');
+            req.session.save(() => {
+                res.redirect('/toughts/dashboard');
+            })
+        }
+    }
+
     static async removeTought(req, res){
         
         const id = req.body.id
